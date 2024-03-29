@@ -9,11 +9,12 @@ import (
 )
 
 type AuthController struct {
-	AuthService service.AuthService
+	AuthService service.IAuthService
 }
 
 func (a *AuthController) SignUp(c echo.Context) error {
-	newUser, err := a.AuthService.HandleSignUp(c)
+	tokenString := c.Request().Header.Get("Authorization")
+	newUser, err := a.AuthService.HandleSignUp(c.Request().Context(), tokenString)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil

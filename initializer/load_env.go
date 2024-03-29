@@ -14,6 +14,8 @@ type Config struct {
 	UriAddress    string `mapstructure:"URI_ADDRESS"`
 
 	SecretKey string `mapstructure:"SECRET_KEY"`
+	Role      string `mapstructure:"ROLE"`
+	DbName    string `mapstructure:"DBNAME"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

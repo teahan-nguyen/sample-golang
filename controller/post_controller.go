@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"samples-golang/model/request"
@@ -11,18 +10,17 @@ import (
 )
 
 type PostController struct {
-	PostService service.PostService
+	PostService service.IPostService
 }
 
-func (a *PostController) CreatedPost(c echo.Context) error {
+func (a *PostController) CreatePost(c echo.Context) error {
 	input := request.ReqPost{}
 	if err := c.Bind(&input); err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(input); err != nil {
+	if err := input.Validate(); err != nil {
 		utils.HandlerError(c, http.StatusForbidden, err.Error())
 		return nil
 	}
@@ -57,9 +55,10 @@ func (a *PostController) GetAllPosts(c echo.Context) error {
 	var docs []*response.PostDataEntry
 	for _, post := range posts {
 		docs = append(docs, &response.PostDataEntry{
-			ID:    post.ID,
-			Title: post.Title,
-			Desc:  post.Description,
+			ID:     post.ID,
+			Title:  post.Title,
+			Desc:   post.Description,
+			UserId: post.UserId,
 		})
 	}
 	responseData := struct {
@@ -111,14 +110,13 @@ func (a *PostController) RemovePostById(c echo.Context) error {
 func (a *PostController) UpdatePostById(c echo.Context) error {
 	id := c.Param("id")
 
-	var input response.ResPostData
+	var input response.CommonPostResponse
 	if err := c.Bind(&input); err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(input); err != nil {
+	if err := input.Validate(); err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
 	}

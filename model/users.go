@@ -9,3 +9,11 @@ type User struct {
 	Email string             `json:"email" bson:"email"`
 	Role  string             `json:"role" bson:"role"`
 }
+
+func (u *User) SetRoleByCount(count int) {
+	if count == 0 {
+		u.Role = "ADMIN"
+	} else {
+		u.Role = "USER"
+	}
+}

@@ -20,7 +20,7 @@ func main() {
 	}
 
 	mongoDB := &db.MongoDB{
-		DbName: "testMongoDb",
+		DbName: config.DbName,
 	}
 
 	mongoDB.Connect()
@@ -33,18 +33,22 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	postService := service.PostService{
-		PostRepository: repo_implement.NewImplement(mongoDB),
-	}
+	postRepo := repo_implement.NewPostImplement(mongoDB.Client.Database(config.DbName))
+	postService := service.NewPostService(postRepo)
 	postController := controller.PostController{
 		PostService: postService,
 	}
 
-	authService := service.AuthService{
-		AuthRepository: repo_implement.NewImplement(mongoDB),
-	}
+	authRepo := repo_implement.NewAuthRepository(mongoDB.Client.Database(config.DbName))
+	authService := service.NewAuthService(authRepo)
 	authController := controller.AuthController{
 		AuthService: authService,
+	}
+
+	userRepo := repo_implement.NewUserImplement(mongoDB.Client.Database(config.DbName))
+	userService := service.NewUserService(userRepo)
+	userController := controller.UserController{
+		UserService: userService,
 	}
 
 	e.GET("/healthchecker", func(c echo.Context) error {
@@ -58,6 +62,7 @@ func main() {
 		Echo:           e,
 		PostController: postController,
 		AuthController: authController,
+		UserController: userController,
 	}
 	api.SetUpRouter()
 
