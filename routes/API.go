@@ -12,6 +12,8 @@ type API struct {
 	PostController controller.PostController
 	AuthController controller.AuthController
 	UserController controller.UserController
+
+	//this
 }
 
 func (API *API) SetUpRouter() {
