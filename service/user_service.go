@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
@@ -15,9 +14,9 @@ type UserService struct {
 }
 type IUserService interface {
 	HandleGetAllUsers(e echo.Context) ([]*model.User, error)
-	HandleGetUserById(c echo.Context, roomID string) (*model.User, error)
+	HandleGetUserById(c echo.Context, userId string) (*model.User, error)
 	HandleUpdateUserById(c echo.Context, userId string, input request.UpdateUser) (*model.User, error)
-	HandleRemoveUser(c echo.Context, id string) error
+	HandleRemoveUser(c echo.Context, userId string) error
 }
 
 func NewUserService(userRepo repository.IUserRepository) IUserService {
@@ -36,8 +35,8 @@ func (a UserService) HandleGetAllUsers(e echo.Context) ([]*model.User, error) {
 	return users, nil
 }
 
-func (a UserService) HandleGetUserById(c echo.Context, roomID string) (*model.User, error) {
-	user, err := a.UserRepository.GetUserById(c.Request().Context(), roomID)
+func (a UserService) HandleGetUserById(c echo.Context, userId string) (*model.User, error) {
+	user, err := a.UserRepository.GetUserById(c.Request().Context(), userId)
 	if err != nil {
 		return nil, err
 	}
@@ -46,17 +45,16 @@ func (a UserService) HandleGetUserById(c echo.Context, roomID string) (*model.Us
 }
 
 func (u UserService) HandleUpdateUserById(c echo.Context, userId string, input request.UpdateUser) (*model.User, error) {
-	roomUpdated, err := u.UserRepository.UpdateUserById(c.Request().Context(), userId, input)
+	user, err := u.UserRepository.UpdateUserById(c.Request().Context(), userId, input)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("service:", input.Email)
 
-	return roomUpdated, nil
+	return user, nil
 }
 
-func (u UserService) HandleRemoveUser(c echo.Context, id string) error {
-	err := u.UserRepository.RemoveRoomById(c.Request().Context(), id)
+func (u UserService) HandleRemoveUser(c echo.Context, userId string) error {
+	err := u.UserRepository.RemoveUserById(c.Request().Context(), userId)
 	if err != nil {
 		return err
 	}

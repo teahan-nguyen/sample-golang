@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"samples-golang/model/request"
@@ -29,7 +28,6 @@ func (a *UserController) GetAllUsers(c echo.Context) error {
 }
 
 func (a *UserController) GetUserById(c echo.Context) error {
-
 	userID := c.Param("id")
 
 	user, err := a.UserService.HandleGetUserById(c, userID)
@@ -44,6 +42,7 @@ func (a *UserController) GetUserById(c echo.Context) error {
 		Data:       user,
 	})
 }
+
 func (a *UserController) UpdateUserById(c echo.Context) error {
 	userId := c.Param("id")
 
@@ -57,7 +56,6 @@ func (a *UserController) UpdateUserById(c echo.Context) error {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
 	}
-	fmt.Println("controller", input.Role)
 
 	UserUpdated, err := a.UserService.HandleUpdateUserById(c, userId, input)
 	if err != nil {
@@ -73,9 +71,9 @@ func (a *UserController) UpdateUserById(c echo.Context) error {
 }
 
 func (a *UserController) RemoveUserById(c echo.Context) error {
-	id := c.Param("id")
+	userId := c.Param("userId")
 
-	err := a.UserService.HandleRemoveUser(c, id)
+	err := a.UserService.HandleRemoveUser(c, userId)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil

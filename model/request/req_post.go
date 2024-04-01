@@ -14,6 +14,5 @@ func (input *ReqPost) Validate() error {
 	if err := validate.Struct(input); err != nil {
 		return err
 	}
-
 	return nil
 }

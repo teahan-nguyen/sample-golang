@@ -16,6 +16,10 @@ type MongoDB struct {
 
 func (m *MongoDB) Connect() {
 	config, err := initializer.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Could not load environment variables", err)
+	}
+
 	clientOptions := options.Client().ApplyURI(config.UriAddress)
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -23,20 +27,20 @@ func (m *MongoDB) Connect() {
 		return
 	}
 
-	err = client.Ping(context.Background(), nil)
-	if err != nil {
+	if err = client.Ping(context.Background(), nil); err != nil {
 		log.Error(err.Error())
 		return
 	}
+
 	fmt.Println("MongoDB connection successful")
 	m.Client = client
 }
 
 func (m *MongoDB) Close() {
-	err := m.Client.Disconnect(context.Background())
-	if err != nil {
+	if err := m.Client.Disconnect(context.Background()); err != nil {
 		log.Error(err.Error())
 		return
 	}
+
 	fmt.Println("MongoDB connection closed")
 }

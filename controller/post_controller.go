@@ -75,9 +75,9 @@ func (a *PostController) GetAllPosts(c echo.Context) error {
 }
 
 func (a *PostController) GetPostById(c echo.Context) error {
-	PostId := c.Param("id")
+	postId := c.Param("id")
 
-	data, err := a.PostService.HandleGetPostById(c, PostId)
+	data, err := a.PostService.HandleGetPostById(c, postId)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
@@ -91,9 +91,9 @@ func (a *PostController) GetPostById(c echo.Context) error {
 }
 
 func (a *PostController) RemovePostById(c echo.Context) error {
-	id := c.Param("id")
+	postId := c.Param("id")
 
-	err := a.PostService.HandleRemovePostById(c, id)
+	err := a.PostService.HandleRemovePostById(c, postId)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
@@ -108,9 +108,9 @@ func (a *PostController) RemovePostById(c echo.Context) error {
 }
 
 func (a *PostController) UpdatePostById(c echo.Context) error {
-	id := c.Param("id")
+	postId := c.Param("postId")
 
-	var input response.CommonPostResponse
+	var input request.ReqUpdatePost
 	if err := c.Bind(&input); err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
@@ -121,7 +121,7 @@ func (a *PostController) UpdatePostById(c echo.Context) error {
 		return nil
 	}
 
-	updatedPost, err := a.PostService.HandleUpdatePostById(c, id, input)
+	updatedPost, err := a.PostService.HandleUpdatePostById(c, postId, input)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil

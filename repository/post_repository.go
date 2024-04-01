@@ -11,5 +11,5 @@ type IPostRepository interface {
 	GetAllPosts(context context.Context) ([]*response.CommonPostResponse, error)
 	GetPostById(context context.Context, postId string) (*response.CommonPostResponse, error)
 	RemovePostById(context context.Context, postId string, userId string) error
-	UpdatePostById(context context.Context, postId string, input response.CommonPostResponse, userId string) (*response.CommonPostResponse, error)
+	UpdatePostById(context context.Context, postId string, input request.ReqUpdatePost, userId string) (*response.CommonPostResponse, error)
 }

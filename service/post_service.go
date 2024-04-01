@@ -17,9 +17,9 @@ type PostService struct {
 type IPostService interface {
 	HandleCreatedPost(e echo.Context, data request.ReqPost) (*response.CommonPostResponse, error)
 	HandleGetAllPosts(e echo.Context) ([]*response.CommonPostResponse, error)
-	HandleGetPostById(e echo.Context, postID string) (*response.CommonPostResponse, error)
-	HandleRemovePostById(e echo.Context, id string) error
-	HandleUpdatePostById(e echo.Context, postId string, input response.CommonPostResponse) (*response.CommonPostResponse, error)
+	HandleGetPostById(e echo.Context, postId string) (*response.CommonPostResponse, error)
+	HandleRemovePostById(e echo.Context, postId string) error
+	HandleUpdatePostById(e echo.Context, postId string, input request.ReqUpdatePost) (*response.CommonPostResponse, error)
 }
 
 func NewPostService(postRepo repository.IPostRepository) IPostService {
@@ -35,6 +35,7 @@ func (a PostService) HandleCreatedPost(e echo.Context, data request.ReqPost) (*r
 		log.Errorf("Get payload failed: %s", err.Error())
 		return nil, errors.New("Get payload failed. Please try again later")
 	}
+
 	userId, ok := payload["uid"].(string)
 	if !ok {
 		log.Errorf("User ID retrieval failed: %s", err.Error())
@@ -70,20 +71,21 @@ func (a PostService) HandleGetPostById(e echo.Context, postID string) (*response
 	return post, nil
 }
 
-func (a PostService) HandleRemovePostById(e echo.Context, id string) error {
+func (a PostService) HandleRemovePostById(e echo.Context, postId string) error {
 	tokenString := e.Request().Header.Get("Authorization")
 	payload, err := utils.GetTokenPayload(tokenString)
 	if err != nil {
 		log.Errorf("Get payload failed: %s", err.Error())
 		return errors.New("Get payload failed. Please try again later")
 	}
+
 	userId, ok := payload["uid"].(string)
 	if !ok {
 		log.Errorf("User ID retrieval failed: %s", err.Error())
 		return errors.New("Sorry, couldn't retrieve user ID. Please try again")
 	}
 
-	err = a.PostRepository.RemovePostById(e.Request().Context(), id, userId)
+	err = a.PostRepository.RemovePostById(e.Request().Context(), postId, userId)
 	if err != nil {
 		log.Errorf("Failed to delete post: %s", err.Error())
 		return errors.New("Failed to delete post. Please try again later.")
@@ -92,13 +94,14 @@ func (a PostService) HandleRemovePostById(e echo.Context, id string) error {
 	return nil
 }
 
-func (a PostService) HandleUpdatePostById(e echo.Context, postId string, input response.CommonPostResponse) (*response.CommonPostResponse, error) {
+func (a PostService) HandleUpdatePostById(e echo.Context, postId string, input request.ReqUpdatePost) (*response.CommonPostResponse, error) {
 	tokenString := e.Request().Header.Get("Authorization")
 	payload, err := utils.GetTokenPayload(tokenString)
 	if err != nil {
 		log.Errorf("Get payload failed: %s", err.Error())
 		return nil, errors.New("Get payload failed. Please try again later")
 	}
+
 	userId, ok := payload["uid"].(string)
 	if !ok {
 		log.Errorf("User ID retrieval failed: %s", err.Error())

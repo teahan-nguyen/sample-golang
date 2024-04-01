@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	verifier "github.com/okta/okta-jwt-verifier-golang"
 	"net/http"
 	"samples-golang/initializer"
@@ -22,10 +22,8 @@ func CheckPermissionToAccess() echo.MiddlewareFunc {
 				})
 				return nil
 			}
-			err := verifyToken(tokenString)
-			// TODO: Replace fmt with log (Zap)
-			fmt.Println("err::::", err)
-			if err != nil {
+
+			if err := verifyToken(tokenString); err != nil {
 				c.JSON(http.StatusForbidden, response.Response{
 					StatusCode: http.StatusForbidden,
 					Message:    "Invalid token",
@@ -33,6 +31,7 @@ func CheckPermissionToAccess() echo.MiddlewareFunc {
 				})
 				return nil
 			}
+
 			return next(c)
 		}
 	}
@@ -40,6 +39,9 @@ func CheckPermissionToAccess() echo.MiddlewareFunc {
 
 func verifyToken(tokenString string) error {
 	config, err := initializer.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Could not load environment variables", err)
+	}
 
 	tv := map[string]string{}
 	tv["aud"] = "api://default"

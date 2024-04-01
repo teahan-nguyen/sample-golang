@@ -24,8 +24,8 @@ func (a AuthRepository) InsertUser(context context.Context, email string) (*mode
 
 	filter := bson.M{"email": email}
 	var existingUser model.User
-	err := collection.FindOne(context, filter).Decode(&existingUser)
 
+	err := collection.FindOne(context, filter).Decode(&existingUser)
 	if err == mongo.ErrNoDocuments {
 		count, err := collection.CountDocuments(context, bson.M{})
 		if err != nil {
@@ -35,6 +35,7 @@ func (a AuthRepository) InsertUser(context context.Context, email string) (*mode
 		newUser := model.User{
 			Email: email,
 		}
+
 		newUser.SetRoleByCount(int(count))
 		_, err = collection.InsertOne(context, newUser)
 		if err != nil {

@@ -30,6 +30,7 @@ func (u AuthService) HandleSignUp(ctx context.Context, tokenString string) (stri
 		log.Errorf("Get payload failed: %s", err.Error())
 		return "", errors.New("Get payload failed. Please try again later")
 	}
+
 	email, ok := payload["sub"].(string)
 	if !ok {
 		log.Errorf("Get email failed: %s", err.Error())
