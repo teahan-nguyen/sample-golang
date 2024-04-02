@@ -5,10 +5,14 @@ import (
 	"github.com/pkg/errors"
 	"samples-golang/initializer"
 	"samples-golang/model"
+	"github.com/labstack/gommon/log"
 )
 
 func DecodeToken(tokenString string) (*model.JWTCustomsClaims, error) {
 	config, err := initializer.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Could not load environment variables", err)
+	}
 
 	if tokenString == "" {
 		return nil, errors.New("invalid token")
@@ -17,7 +21,6 @@ func DecodeToken(tokenString string) (*model.JWTCustomsClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &model.JWTCustomsClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.SecretKey), nil
 	})
-
 	if err != nil || !token.Valid {
 		return nil, err
 	}

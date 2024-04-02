@@ -9,6 +9,6 @@ import (
 type IUserRepository interface {
 	GetAllUsers(context context.Context) ([]*model.User, error)
 	GetUserById(context context.Context, userId string) (*model.User, error)
-	UpdateUserById(context context.Context, id string, input request.UpdateUser) (*model.User, error)
+	UpdateUserById(context context.Context, userId string, input request.UpdateUser) (*model.User, error)
 	RemoveUserById(context context.Context, userId string) error
 }

@@ -54,13 +54,12 @@ func (a AuthRepository) VerifyUser(context context.Context, email string) (*mode
 	collection := a.mongoDB.Collection("user")
 
 	filter := bson.M{"email": email}
-	err := collection.FindOne(context, filter).Decode(&user)
-	if err != nil {
+	if err := collection.FindOne(context, filter).Decode(&user);err != nil{
 		if err == mongo.ErrNoDocuments {
 			return &model.User{}, errors.New("user not found")
 		}
 		return &model.User{}, err
 	}
-
+	
 	return &user, nil
 }

@@ -19,8 +19,8 @@ func NewUserImplement(mongoDb *mongo.Database) repository.IUserRepository {
 		mongoDB: mongoDb,
 	}
 }
-func (a *UserImplement) GetAllUsers(context context.Context) ([]*model.User, error) {
-	collection := a.mongoDB.Collection("user")
+func (u *UserImplement) GetAllUsers(context context.Context) ([]*model.User, error) {
+	collection := u.mongoDB.Collection("user")
 
 	cursor, err := collection.Find(context, bson.D{})
 	if err != nil {
@@ -40,8 +40,8 @@ func (a *UserImplement) GetAllUsers(context context.Context) ([]*model.User, err
 	return users, nil
 }
 
-func (a *UserImplement) GetUserById(context context.Context, userId string) (*model.User, error) {
-	collection := a.mongoDB.Collection("user")
+func (u *UserImplement) GetUserById(context context.Context, userId string) (*model.User, error) {
+	collection := u.mongoDB.Collection("user")
 	var user *model.User
 	objectId, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
@@ -55,10 +55,10 @@ func (a *UserImplement) GetUserById(context context.Context, userId string) (*mo
 	return user, nil
 }
 
-func (a *UserImplement) UpdateUserById(context context.Context, id string, input request.UpdateUser) (*model.User, error) {
-	collection := a.mongoDB.Collection("user")
+func (u *UserImplement) UpdateUserById(context context.Context, userId string, input request.UpdateUser) (*model.User, error) {
+	collection := u.mongoDB.Collection("user")
 
-	objectId, err := primitive.ObjectIDFromHex(id)
+	objectId, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +84,8 @@ func (a *UserImplement) UpdateUserById(context context.Context, id string, input
 	return user, nil
 }
 
-func (a *UserImplement) RemoveUserById(context context.Context, userId string) error {
-	collection := a.mongoDB.Collection("user")
+func (u *UserImplement) RemoveUserById(context context.Context, userId string) error {
+	collection := u.mongoDB.Collection("user")
 
 	objectId, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {

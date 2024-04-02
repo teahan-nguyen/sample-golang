@@ -21,17 +21,17 @@ func NewPostImplement(mongoDb *mongo.Database) repository.IPostRepository {
 	}
 }
 
-func (a *PostImplement) CreatedPost(context context.Context, data request.ReqPost, userId string) (*response.CommonPostResponse, error) {
-	collection := a.mongoDB.Collection("content")
+func (p *PostImplement) CreatedPost(context context.Context, data request.RequestPost, userId string) (*response.CommonPostResponse, error) {
+	collection := p.mongoDB.Collection("content")
 
-	reqPost := &response.CommonPostResponse{
+	requestPost := &response.CommonPostResponse{
 		ID:          primitive.NewObjectID(),
 		Title:       data.Title,
 		Description: data.Description,
 		UserId:      userId,
 	}
 
-	insertData, err := collection.InsertOne(context, reqPost)
+	insertData, err := collection.InsertOne(context, requestPost)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func (a *PostImplement) CreatedPost(context context.Context, data request.ReqPos
 	return res, nil
 }
 
-func (a *PostImplement) GetAllPosts(context context.Context) ([]*response.CommonPostResponse, error) {
-	collection := a.mongoDB.Collection("content")
+func (p *PostImplement) GetAllPosts(context context.Context) ([]*response.CommonPostResponse, error) {
+	collection := p.mongoDB.Collection("content")
 
 	cursor, err := collection.Find(context, bson.D{})
 	if err != nil {
@@ -71,8 +71,8 @@ func (a *PostImplement) GetAllPosts(context context.Context) ([]*response.Common
 	return posts, nil
 }
 
-func (a *PostImplement) GetPostById(context context.Context, postId string) (*response.CommonPostResponse, error) {
-	collection := a.mongoDB.Collection("content")
+func (p *PostImplement) GetPostById(context context.Context, postId string) (*response.CommonPostResponse, error) {
+	collection := p.mongoDB.Collection("content")
 
 	var post *response.CommonPostResponse
 	objectId, err := primitive.ObjectIDFromHex(postId)
@@ -87,8 +87,8 @@ func (a *PostImplement) GetPostById(context context.Context, postId string) (*re
 
 	return post, nil
 }
-func (a *PostImplement) RemovePostById(context context.Context, postId string, userId string) error {
-	collection := a.mongoDB.Collection("content")
+func (p *PostImplement) RemovePostById(context context.Context, postId string, userId string) error {
+	collection := p.mongoDB.Collection("content")
 
 	objectId, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {
@@ -115,8 +115,8 @@ func (a *PostImplement) RemovePostById(context context.Context, postId string, u
 	return nil
 }
 
-func (a *PostImplement) UpdatePostById(context context.Context, postId string, input request.ReqUpdatePost, userId string) (*response.CommonPostResponse, error) {
-	collection := a.mongoDB.Collection("content")
+func (p *PostImplement) UpdatePostById(context context.Context, postId string, input request.UpdatePost, userId string) (*response.CommonPostResponse, error) {
+	collection := p.mongoDB.Collection("content")
 
 	objectId, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {

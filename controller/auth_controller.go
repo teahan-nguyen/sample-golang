@@ -12,29 +12,29 @@ type AuthController struct {
 	AuthService service.IAuthService
 }
 
-func (a *AuthController) SignUp(c echo.Context) error {
-	tokenString := c.Request().Header.Get("Authorization")
-	newUser, err := a.AuthService.HandleSignUp(c.Request().Context(), tokenString)
+func (a *AuthController) SignUp(ctx echo.Context) error {
+	tokenString := ctx.Request().Header.Get("Authorization")
+	newUser, err := a.AuthService.HandleSignUp(ctx.Request().Context(), tokenString)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Account created successfully",
 		Data:       newUser,
 	})
 }
 
-func (a *AuthController) Login(c echo.Context) error {
-	token, err := a.AuthService.HandleLogin(c)
+func (a *AuthController) Login(ctx echo.Context) error {
+	token, err := a.AuthService.HandleLogin(ctx)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Login successful",
 		Data:       token,

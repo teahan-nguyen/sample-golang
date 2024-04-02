@@ -25,8 +25,8 @@ func NewUserService(userRepo repository.IUserRepository) IUserService {
 	}
 }
 
-func (a UserService) HandleGetAllUsers(e echo.Context) ([]*model.User, error) {
-	users, err := a.UserRepository.GetAllUsers(e.Request().Context())
+func (u UserService) HandleGetAllUsers(ctx echo.Context) ([]*model.User, error) {
+	users, err := u.UserRepository.GetAllUsers(ctx.Request().Context())
 	if err != nil {
 		log.Errorf("User ID retrieval failed: %s", err.Error())
 		return nil, errors.New("Sorry, couldn't retrieve user ID. Please try again")
@@ -35,8 +35,8 @@ func (a UserService) HandleGetAllUsers(e echo.Context) ([]*model.User, error) {
 	return users, nil
 }
 
-func (a UserService) HandleGetUserById(c echo.Context, userId string) (*model.User, error) {
-	user, err := a.UserRepository.GetUserById(c.Request().Context(), userId)
+func (u UserService) HandleGetUserById(ctx echo.Context, userId string) (*model.User, error) {
+	user, err := u.UserRepository.GetUserById(ctx.Request().Context(), userId)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,8 @@ func (a UserService) HandleGetUserById(c echo.Context, userId string) (*model.Us
 	return user, nil
 }
 
-func (u UserService) HandleUpdateUserById(c echo.Context, userId string, input request.UpdateUser) (*model.User, error) {
-	user, err := u.UserRepository.UpdateUserById(c.Request().Context(), userId, input)
+func (u UserService) HandleUpdateUserById(ctx echo.Context, userId string, input request.UpdateUser) (*model.User, error) {
+	user, err := u.UserRepository.UpdateUserById(ctx.Request().Context(), userId, input)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,8 @@ func (u UserService) HandleUpdateUserById(c echo.Context, userId string, input r
 	return user, nil
 }
 
-func (u UserService) HandleRemoveUser(c echo.Context, userId string) error {
-	err := u.UserRepository.RemoveUserById(c.Request().Context(), userId)
+func (u UserService) HandleRemoveUser(ctx echo.Context, userId string) error {
+	err := u.UserRepository.RemoveUserById(ctx.Request().Context(), userId)
 	if err != nil {
 		return err
 	}

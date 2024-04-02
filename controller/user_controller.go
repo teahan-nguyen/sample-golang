@@ -13,73 +13,73 @@ type UserController struct {
 	UserService service.IUserService
 }
 
-func (a *UserController) GetAllUsers(c echo.Context) error {
-	users, err := a.UserService.HandleGetAllUsers(c)
+func (u *UserController) GetAllUsers(ctx echo.Context) error {
+	users, err := u.UserService.HandleGetAllUsers(ctx)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Data query successful",
 		Data:       users,
 	})
 }
 
-func (a *UserController) GetUserById(c echo.Context) error {
-	userID := c.Param("id")
+func (u *UserController) GetUserById(ctx echo.Context) error {
+	userID := ctx.Param("id")
 
-	user, err := a.UserService.HandleGetUserById(c, userID)
+	user, err := u.UserService.HandleGetUserById(ctx, userID)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Search data successfully",
 		Data:       user,
 	})
 }
 
-func (a *UserController) UpdateUserById(c echo.Context) error {
-	userId := c.Param("id")
+func (u *UserController) UpdateUserById(ctx echo.Context) error {
+	userId := ctx.Param("id")
 
 	var input request.UpdateUser
-	if err := c.Bind(&input); err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+	if err := ctx.Bind(&input); err != nil {
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
 	if err := input.Validate(); err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	UserUpdated, err := a.UserService.HandleUpdateUserById(c, userId, input)
+	UserUpdated, err := u.UserService.HandleUpdateUserById(ctx, userId, input)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Successfully updated data",
 		Data:       UserUpdated,
 	})
 }
 
-func (a *UserController) RemoveUserById(c echo.Context) error {
-	userId := c.Param("userId")
+func (u *UserController) RemoveUserById(ctx echo.Context) error {
+	userId := ctx.Param("userId")
 
-	err := a.UserService.HandleRemoveUser(c, userId)
+	err := u.UserService.HandleRemoveUser(ctx, userId)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "user has been successfully removed",
 		Data:       nil,

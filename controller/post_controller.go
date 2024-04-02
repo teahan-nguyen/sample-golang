@@ -13,35 +13,35 @@ type PostController struct {
 	PostService service.IPostService
 }
 
-func (a *PostController) CreatePost(c echo.Context) error {
-	input := request.ReqPost{}
-	if err := c.Bind(&input); err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+func (p *PostController) CreatePost(ctx echo.Context) error {
+	input := request.RequestPost{}
+	if err := ctx.Bind(&input); err != nil {
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
 	if err := input.Validate(); err != nil {
-		utils.HandlerError(c, http.StatusForbidden, err.Error())
+		utils.HandlerError(ctx, http.StatusForbidden, err.Error())
 		return nil
 	}
 
-	data, err := a.PostService.HandleCreatedPost(c, input)
+	data, err := p.PostService.HandleCreatedPost(ctx, input)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Data query successful",
 		Data:       data,
 	})
 }
 
-func (a *PostController) GetAllPosts(c echo.Context) error {
-	posts, err := a.PostService.HandleGetAllPosts(c)
+func (p *PostController) GetAllPosts(ctx echo.Context) error {
+	posts, err := p.PostService.HandleGetAllPosts(ctx)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
@@ -61,45 +61,47 @@ func (a *PostController) GetAllPosts(c echo.Context) error {
 			UserId: post.UserId,
 		})
 	}
-	responseData := struct {
-		TotalPages int                       `json:"totalPages"`
-		TotalItems int                       `json:"totalItems"`
-		Docs       []*response.PostDataEntry `json:"docs"`
-	}{
+	
+	type PostDataResponse struct {
+		TotalPages int                    `json:"totalPages"`
+		TotalItems int                    `json:"totalItems"`
+		Posts      []*response.PostDataEntry `json:"posts"`
+	}
+	responseData := PostDataResponse{
 		TotalPages: totalPages,
 		TotalItems: totalItems,
-		Docs:       docs,
+		Posts:      docs,
 	}
 
-	return c.JSON(http.StatusOK, responseData)
+	return ctx.JSON(http.StatusOK, responseData)
 }
 
-func (a *PostController) GetPostById(c echo.Context) error {
-	postId := c.Param("id")
+func (p *PostController) GetPostById(ctx echo.Context) error {
+	postId := ctx.Param("id")
 
-	data, err := a.PostService.HandleGetPostById(c, postId)
+	data, err := p.PostService.HandleGetPostById(ctx, postId)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Data query successful",
 		Data:       data,
 	})
 }
 
-func (a *PostController) RemovePostById(c echo.Context) error {
-	postId := c.Param("id")
+func (p *PostController) RemovePostById(ctx echo.Context) error {
+	postId := ctx.Param("id")
 
-	err := a.PostService.HandleRemovePostById(c, postId)
+	err := p.PostService.HandleRemovePostById(ctx, postId)
 	if err != nil {
-		utils.HandlerError(c, http.StatusBadRequest, err.Error())
+		utils.HandlerError(ctx, http.StatusBadRequest, err.Error())
 		return nil
 	}
 
-	return c.JSON(http.StatusOK, response.Response{
+	return ctx.JSON(http.StatusOK, response.Response{
 		StatusCode: http.StatusOK,
 		Message:    "post has been successfully removed",
 		Data:       nil,
@@ -107,10 +109,10 @@ func (a *PostController) RemovePostById(c echo.Context) error {
 
 }
 
-func (a *PostController) UpdatePostById(c echo.Context) error {
+func (p *PostController) UpdatePostById(c echo.Context) error {
 	postId := c.Param("postId")
 
-	var input request.ReqUpdatePost
+	var input request.UpdatePost
 	if err := c.Bind(&input); err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil
@@ -121,7 +123,7 @@ func (a *PostController) UpdatePostById(c echo.Context) error {
 		return nil
 	}
 
-	updatedPost, err := a.PostService.HandleUpdatePostById(c, postId, input)
+	updatedPost, err := p.PostService.HandleUpdatePostById(c, postId, input)
 	if err != nil {
 		utils.HandlerError(c, http.StatusBadRequest, err.Error())
 		return nil

@@ -24,7 +24,7 @@ func NewAuthService(authRepo repository.IAuthRepository) IAuthService {
 	}
 }
 
-func (u AuthService) HandleSignUp(ctx context.Context, tokenString string) (string, error) {
+func (a AuthService) HandleSignUp(ctx context.Context, tokenString string) (string, error) {
 	payload, err := utils.GetTokenPayload(tokenString)
 	if err != nil {
 		log.Errorf("Get payload failed: %s", err.Error())
@@ -37,7 +37,7 @@ func (u AuthService) HandleSignUp(ctx context.Context, tokenString string) (stri
 		return "", errors.New("Something happened. Please retry")
 	}
 
-	user, err := u.AuthRepository.InsertUser(ctx, email)
+	user, err := a.AuthRepository.InsertUser(ctx, email)
 	if err != nil {
 		log.Errorf("fail to insert user: %s", err.Error())
 		return "", errors.New("Failed to insert user. Please try again later")
@@ -52,7 +52,7 @@ func (u AuthService) HandleSignUp(ctx context.Context, tokenString string) (stri
 	return token, nil
 }
 
-func (u AuthService) HandleLogin(ctx echo.Context) (string, error) {
+func (a AuthService) HandleLogin(ctx echo.Context) (string, error) {
 	tokenString := ctx.Request().Header.Get("Authorization")
 	payload, err := utils.GetTokenPayload(tokenString)
 	if err != nil {
@@ -64,7 +64,7 @@ func (u AuthService) HandleLogin(ctx echo.Context) (string, error) {
 		log.Errorf("Get email failed: %s", err.Error())
 		return "", errors.New("get email failed. Please try again later")
 	}
-	user, err := u.AuthRepository.VerifyUser(ctx.Request().Context(), email)
+	user, err := a.AuthRepository.VerifyUser(ctx.Request().Context(), email)
 	if err != nil {
 		log.Errorf("User verification failed: %s", err.Error())
 		return "", errors.New("User verification failed. Please double-check your information and try again.")

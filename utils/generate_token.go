@@ -4,11 +4,15 @@ import (
 	"github.com/golang-jwt/jwt"
 	"samples-golang/initializer"
 	"samples-golang/model"
+	"github.com/labstack/gommon/log"
 	"time"
 )
 
 func GenerateToken(user model.User) (string, error) {
 	config, err := initializer.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Could not load environment variables", err)
+	}
 
 	claims := &model.JWTCustomsClaims{
 		ID:    user.Id,
