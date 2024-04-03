@@ -1,13 +1,14 @@
 package middleware
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
-	verifier "github.com/okta/okta-jwt-verifier-golang"
 	"net/http"
 	"samples-golang/initializer"
 	"samples-golang/model/response"
 	"samples-golang/utils"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	verifier "github.com/okta/okta-jwt-verifier-golang"
 )
 
 func CheckPermissionToAccess() echo.MiddlewareFunc {

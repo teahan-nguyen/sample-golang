@@ -1,11 +1,12 @@
 package utils
 
 import (
-	"github.com/golang-jwt/jwt"
-	"github.com/pkg/errors"
 	"samples-golang/initializer"
 	"samples-golang/model"
+
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/gommon/log"
+	"github.com/pkg/errors"
 )
 
 func DecodeToken(tokenString string) (*model.JWTCustomsClaims, error) {

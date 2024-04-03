@@ -88,6 +88,10 @@ func (p *PostImplement) GetPostById(context context.Context, postId string) (*re
 	return post, nil
 }
 func (p *PostImplement) RemovePostById(context context.Context, postId string, userId string) error {
+	if err := p.CheckPostPermission(context, postId, userId); err != nil {
+		return err
+	}
+
 	collection := p.mongoDB.Collection("content")
 
 	objectId, err := primitive.ObjectIDFromHex(postId)
@@ -95,18 +99,6 @@ func (p *PostImplement) RemovePostById(context context.Context, postId string, u
 		return err
 	}
 
-	var post struct {
-		ID     primitive.ObjectID `bson:"_id"`
-		UserId string             `bson:"userId"`
-	}
-
-	if err = collection.FindOne(context, bson.M{"_id": objectId}).Decode(&post); err != nil {
-		return err
-	}
-
-	if post.UserId != userId {
-		return errors.New("You don't have permission to delete this post")
-	}
 	_, err = collection.DeleteOne(context, bson.M{"_id": objectId})
 	if err != nil {
 		return err
@@ -116,24 +108,15 @@ func (p *PostImplement) RemovePostById(context context.Context, postId string, u
 }
 
 func (p *PostImplement) UpdatePostById(context context.Context, postId string, input request.UpdatePost, userId string) (*response.CommonPostResponse, error) {
+	if err := p.CheckPostPermission(context, postId, userId); err != nil {
+		return nil, err
+	}
+
 	collection := p.mongoDB.Collection("content")
 
 	objectId, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {
 		return nil, err
-	}
-
-	var post struct {
-		ID     primitive.ObjectID `bson:"_id"`
-		UserId string             `bson:"userId"`
-	}
-
-	if err = collection.FindOne(context, bson.M{"_id": objectId}).Decode(&post); err != nil {
-		return nil, err
-	}
-
-	if post.UserId != userId {
-		return nil, errors.New("you don't have permission to delete this post")
 	}
 
 	update := bson.M{
@@ -154,4 +137,27 @@ func (p *PostImplement) UpdatePostById(context context.Context, postId string, i
 	}
 
 	return updatedPost, nil
+}
+
+func (p *PostImplement) CheckPostPermission(context context.Context, postId string, userId string) error {
+	collection := p.mongoDB.Collection("content")
+
+	objectId, err := primitive.ObjectIDFromHex(postId)
+	if err != nil {
+		return err
+	}
+
+	var post struct {
+		UserID string `bson:"userId"`
+	}
+
+	if err = collection.FindOne(context, bson.M{"_id": objectId}).Decode(&post); err != nil {
+		return err
+	}
+
+	if post.UserID != userId {
+		return errors.New("you don't have permission to delete this post")
+	}
+
+	return nil
 }

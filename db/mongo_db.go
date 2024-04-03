@@ -2,11 +2,12 @@ package db
 
 import (
 	"fmt"
+	"samples-golang/initializer"
+
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/net/context"
-	"samples-golang/initializer"
 )
 
 type MongoDB struct {
@@ -16,6 +17,7 @@ type MongoDB struct {
 
 func (m *MongoDB) Connect() {
 	config, err := initializer.LoadConfig(".")
+	
 	if err != nil {
 		log.Fatal("Could not load environment variables", err)
 	}
